@@ -33,7 +33,7 @@ def collect_gesture(person_name, gesture_name, duration=5, sample_rate=50, repet
             timestamp = time.perf_counter()
 
             # Store data in buffer
-            data_buffer.append([timestamp, ax, ay, az, gx, gy, gz, person_name, gesture_name])
+            data_buffer.append([timestamp, ax, ay, az, gx, gy, gz, gesture_name])
 
             # Wait to maintain sampling rate
             while time.perf_counter() < loop_start + (1 / sample_rate):
@@ -44,7 +44,7 @@ def collect_gesture(person_name, gesture_name, duration=5, sample_rate=50, repet
             writer = csv.writer(file)
             # Write header only if file is new
             if not file_exists:
-                writer.writerow(["Timestamp", "Acc_X", "Acc_Y", "Acc_Z", "Gyro_X", "Gyro_Y", "Gyro_Z", "Person", "Gesture"])
+                writer.writerow(["Timestamp", "Acc_X", "Acc_Y", "Acc_Z", "Gyro_X", "Gyro_Y", "Gyro_Z", "Gesture"])
                 file_exists = True  # Ensure header is not written again
 
             writer.writerows(data_buffer)

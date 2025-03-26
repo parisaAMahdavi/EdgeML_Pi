@@ -1,3 +1,4 @@
+
 import time
 import csv
 import os
@@ -13,7 +14,7 @@ DATA_FOLDER = "collected_data"
 os.makedirs(DATA_FOLDER, exist_ok=True)
 
 # Function to collect data for a gesture
-def collect_gesture(person_name, gesture_name, duration=5, sample_rate=50, repetitions=5):
+def collect_gesture(person_name, gesture_name, duration=1, sample_rate=50, repetitions=20):
     filename = os.path.join(DATA_FOLDER, f"{person_name}_{gesture_name}.csv")
 
     # Check if the file exists to add headers only once
@@ -52,7 +53,7 @@ def collect_gesture(person_name, gesture_name, duration=5, sample_rate=50, repet
         print(f"Gesture '{gesture_name}' recorded for {duration} seconds.")
         if i < repetitions - 1:  # Avoid delay after last gesture
             print("Pausing for 5 seconds before next recording...")
-            time.sleep(5)
+            time.sleep(2)
     print(f"Finished recording {repetitions} gestures of '{gesture_name}' for '{person_name}'.")
 
 # User input for person's name, gesture name, and number of repetitions

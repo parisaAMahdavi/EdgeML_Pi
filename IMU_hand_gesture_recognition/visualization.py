@@ -27,9 +27,12 @@ class MainWindow(QtWidgets.QMainWindow):
         # Create plots
         self.graphWidget_gyro = pg.PlotWidget(title="Gyroscope Data")
         self.graphWidget_accel = pg.PlotWidget(title="Accelerometer Data")
+        self.graphWidget_magnitude = pg.PlotWidget(title="Motion Magnitude")
 
         layout.addWidget(self.graphWidget_gyro)
         layout.addWidget(self.graphWidget_accel)
+        layout.addWidget(self.graphWidget_magnitude)
+
 
         # Data buffers
         self.time_data = deque(maxlen=buffer_size)
@@ -39,14 +42,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.accel_x_data = deque(maxlen=buffer_size)
         self.accel_y_data = deque(maxlen=buffer_size)
         self.accel_z_data = deque(maxlen=buffer_size)
+        self.magnitude_data = deque(maxlen=buffer_size)
 
         # Set plot backgrounds to white
-        for graph in [self.graphWidget_gyro, self.graphWidget_accel]:
+        for graph in [self.graphWidget_gyro, self.graphWidget_accel, self.graphWidget_magnitude]:
             graph.setBackground(QtGui.QColor(255, 255, 255))
 
         # Set axis labels
         self.graphWidget_gyro.setLabels(bottom="Time (s)", left="Gyroscope (°/s)")
         self.graphWidget_accel.setLabels(bottom="Time (s)", left="Accelerometer (g)")
+        self.graphWidget_magnitude.setLabels(bottom="Time (s)", left="Acceleration Magnitude (g)")
+
 
         # Create a shared legend and place it inside the first plot (but outside the graph area)
         self.legend = pg.LegendItem((30, 30), offset=(30, 5))  # (width, height), (x, y) offset
@@ -61,10 +67,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.line_accel_y = self.graphWidget_accel.plot([], [], pen=pg.mkPen(color='g'))
         self.line_accel_z = self.graphWidget_accel.plot([], [], pen=pg.mkPen(color='b'))
 
+        self.line_magnitude = self.graphWidget_magnitude.plot([], [], pen=pg.mkPen(color='m'))
+
          # Add all items to the shared legend
         self.legend.addItem(self.line_gyro_x, "X")
         self.legend.addItem(self.line_gyro_y, "Y")
         self.legend.addItem(self.line_gyro_z, "Z")
+
+
     
 
         # Timer for updating plot
@@ -94,6 +104,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.accel_y_data.append(accelerometer[1])
         self.accel_z_data.append(accelerometer[2])
 
+        combined_vector = numpy.concatenate((accelerometer, gyroscope))
+        motion_magnitude = numpy.linalg.norm(accelerometer)
+        self.magnitude_data.append(motion_magnitude)
+
         # Update plots with latest data
         self.line_gyro_x.setData(self.time_data, self.gyro_x_data)
         self.line_gyro_y.setData(self.time_data, self.gyro_y_data)
@@ -102,6 +116,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.line_accel_x.setData(self.time_data, self.accel_x_data)
         self.line_accel_y.setData(self.time_data, self.accel_y_data)
         self.line_accel_z.setData(self.time_data, self.accel_z_data)
+
+        self.line_magnitude.setData(self.time_data, self.magnitude_data)
 
 
 if __name__ == "__main__":
